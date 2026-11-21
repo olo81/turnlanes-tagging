@@ -71,7 +71,7 @@ public class TurnSelectionUnidirectional extends JPanel {
     //Preset Data
     PresetsData presetsData = new PresetsData();
 
-    int min = 1;
+    int min = 0;
     int max = 12;
     int step = 1;
     int initValue = 1;

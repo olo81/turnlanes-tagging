@@ -90,7 +90,7 @@ public class TurnSelectionBidirectional extends JPanel {
     BLanes bLanesC = new BLanes();
     //Preset Data
     PresetsData presetsData = new PresetsData();
-    int min = 1;
+    int min = 0;
     int max = 10;
     int step = 1;
     int initValue = 1;

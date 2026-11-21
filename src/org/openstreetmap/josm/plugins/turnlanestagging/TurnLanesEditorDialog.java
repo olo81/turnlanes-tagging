@@ -215,21 +215,6 @@ public class TurnLanesEditorDialog extends ExtendedDialog {
         }
     }
 
-    /**
-     * Whether the way is one-way: an explicit {@code oneway} value, a
-     * roundabout, or a motorway without {@code oneway=no}.
-     */
-    private boolean isOnewayWay(OsmPrimitive element) {
-        String oneway = element.get("oneway");
-        if ("yes".equals(oneway) || "1".equals(oneway) || "true".equals(oneway) || "-1".equals(oneway)) {
-            return true;
-        }
-        if ("roundabout".equals(element.get("junction")) || "circular".equals(element.get("junction"))) {
-            return true;
-        }
-        return "motorway".equals(element.get("highway")) && !"no".equals(oneway);
-    }
-
     public boolean addOneway() {
         //Collection<OsmPrimitive> selection = Main.getLayerManager().getEditDataSet().getSelected();
         // for (OsmPrimitive element : selection) {
@@ -247,8 +232,12 @@ public class TurnLanesEditorDialog extends ExtendedDialog {
         //set as unidirectional as first
 
         OsmPrimitive element = waySelected();
-        if (isOnewayWay(element)) {
-            bRoad.setName("Unidirectional");
+        if (element.hasKey("oneway")) {
+            if (element.get("oneway").equals("yes")) {
+                bRoad.setName("Unidirectional");
+            } else if (element.get("oneway").equals("no")) {
+                bRoad.setName("Bidirectional");
+            }
         } else {
             bRoad.setName("Bidirectional");
         }
@@ -261,24 +250,16 @@ public class TurnLanesEditorDialog extends ExtendedDialog {
                         && Integer.valueOf(element.get("lanes")) != bRoad.getLanesUnid().getLanes().size()) {
                     new Notification(tr(" The number of lanes has fixed according number of turns")).show();
                 }
+            } else if (key.equals("lanes") && Util.isInt(element.get(key))
+                    && !element.hasKey("turn:lanes") && element.hasDirectionKeys()) {
+                bRoad = presetsData.defaultRoadUnidirectional(Integer.valueOf(element.get(key)));
+                bRoad.setName("Unidirectional");
             } else if (key.equals("lanes") && Util.isInt(element.get(key)) && !element.hasKey("turn:lanes")
                     && !(element.hasKey("turn:lanes:forward") || element.hasKey("turn:lanes:both_ways") ||
                          element.hasKey("turn:lanes:backward") || element.hasKey("lanes:forward") ||
                          element.hasKey("lanes:both_ways") || element.hasKey("lanes:backward"))) {
-                int total = Integer.valueOf(element.get(key));
-                if (isOnewayWay(element)) {
-                    bRoad = presetsData.defaultRoadUnidirectional(total);
-                    bRoad.setName("Unidirectional");
-                } else {
-                    // Split the lanes between the two directions of travel:
-                    // the extra lane (if any) goes to the forward direction.
-                    int forward = (total + 1) / 2;
-                    int backward = total - forward;
-                    bRoad = Util.isRightHandTraffic()
-                            ? presetsData.defaultRoadBidirectional("backward", backward, "forward", forward)
-                            : presetsData.defaultRoadBidirectional("forward", forward, "backward", backward);
-                    bRoad.setName("Bidirectional");
-                }
+                bRoad = presetsData.defaultRoadUnidirectional(Integer.valueOf(element.get(key)));
+                bRoad.setName("Unidirectional");
             } else if (key.equals("turn:lanes:forward")) {
                 if (Util.isRightHandTraffic()) {
                     bRoad.getLanesC().setStringLanes("forward", element.get(key));
@@ -485,7 +466,8 @@ public class TurnLanesEditorDialog extends ExtendedDialog {
             } else if (!lastEdits.isEmpty() && lastEdits.get(0).getName().equals("Unidirectional")) {
                 buildTurnLanes.setLastEdit();
             } else {
-                buildTurnLanes.startDefaultUnidirectional();
+                // No lane information: open empty, do not invent lanes.
+                buildTurnLanes.setLanesByRoadUnidirectional(presetsData.defaultRoadUnidirectional(0));
             }
         } else if (bRoad.getLanesA().getLanes().size() > 0 ||
                    bRoad.getLanesB().getLanes().size() > 0 ||
@@ -500,7 +482,9 @@ public class TurnLanesEditorDialog extends ExtendedDialog {
         } else if (!lastEdits.isEmpty() && lastEdits.get(0).getName().equals("Bidirectional")) {
             buildTurnLanes.setLastEdit();
         } else {
-            buildTurnLanes.startDefaultBidirectional();
+            // No lane information: open empty, do not invent lanes.
+            buildTurnLanes.setLanesByRoadBidirectional(
+                    presetsData.defaultRoadBidirectional("backward", 0, "forward", 0));
         }
     }
 
