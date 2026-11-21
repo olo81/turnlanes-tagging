@@ -20,7 +20,6 @@ public class BRoad implements Serializable {
     private String cyclewayLeft = "";
     private String cyclewayRight = "";
     private String bikeBoundary = "solid";
-    private String edgeLines = "";
 
     public BRoad() {
     }
@@ -135,18 +134,6 @@ public class BRoad implements Serializable {
 
     public void setBikeBoundary(String bikeBoundary) {
         this.bikeBoundary = bikeBoundary;
-    }
-
-    /**
-     * Returns the {@code edge_lines} setting: {@code yes} draws solid lines
-     * at the outer edges of the road.
-     */
-    public String getEdgeLines() {
-        return edgeLines;
-    }
-
-    public void setEdgeLines(String edgeLines) {
-        this.edgeLines = edgeLines;
     }
 
     public String turns() {

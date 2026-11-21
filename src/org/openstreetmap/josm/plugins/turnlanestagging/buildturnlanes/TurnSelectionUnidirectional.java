@@ -240,7 +240,6 @@ public class TurnSelectionUnidirectional extends JPanel {
         valBRoad.setCyclewayLeft(bRoad.getCyclewayLeft());
         valBRoad.setCyclewayRight(bRoad.getCyclewayRight());
         valBRoad.setBikeBoundary(bRoad.getBikeBoundary());
-        valBRoad.setEdgeLines(bRoad.getEdgeLines());
         refreshPreview();
     }
 
@@ -258,7 +257,6 @@ public class TurnSelectionUnidirectional extends JPanel {
         valBRoad.setCyclewayLeft(BuildTurnLanes.bRoad.getCyclewayLeft());
         valBRoad.setCyclewayRight(BuildTurnLanes.bRoad.getCyclewayRight());
         valBRoad.setBikeBoundary(BuildTurnLanes.bRoad.getBikeBoundary());
-        valBRoad.setEdgeLines(BuildTurnLanes.bRoad.getEdgeLines());
         refreshBoundaries();
     }
 
@@ -306,17 +304,24 @@ public class TurnSelectionUnidirectional extends JPanel {
         boolean bikeSolid = !"dashed".equals(bikeBoundary);
         if (bikeLeft && !lanes.isEmpty()) {
             bikeLeftPanel.setMode(cyclewayLeft);
-            // The boundary between the cycleway lane and the traffic lanes
-            // follows the 'Bicycle lane line' option (solid or dashed).
-            stripBikeLeft.setState(bikeSolid, bikeSolid, false, divider, laneMarkings);
+            BLane first = lanes.get(0);
+            // Left half (bicycle side) follows the Bicycle lane line option,
+            // right half (car side) follows the change of the first lane.
+            stripBikeLeft.setState(bikeSolid, Util.blocksSmallerOffsetSide(first),
+                    true, Util.hasChangeValue(first), false, divider, laneMarkings);
         }
         if (bikeRight && !lanes.isEmpty()) {
             bikeRightPanel.setMode(cyclewayRight);
-            stripBikeRight.setState(bikeSolid, bikeSolid, false, divider, laneMarkings);
+            BLane last = lanes.get(lanes.size() - 1);
+            // Left half (car side) follows the change of the last lane, right
+            // half (bicycle side) follows the Bicycle lane line option.
+            stripBikeRight.setState(Util.blocksLargerOffsetSide(last), bikeSolid,
+                    Util.hasChangeValue(last), true, false, divider, laneMarkings);
         }
-        // Road edge lines behave like the lines between lanes: they follow
-        // the change value of the adjacent outermost lane (solid when it may
-        // not cross, dashed when it may, nothing when the value is empty).
+        // Road edge lines follow the change value of the adjacent outermost
+        // lane, like the lines between lanes. With a cycleway on that side
+        // the edge line of the car lanes is the cycleway boundary, so the
+        // outer edge strip is hidden.
         if (!lanes.isEmpty()) {
             BLane first = lanes.get(0);
             BLane last = lanes.get(lanes.size() - 1);
@@ -325,8 +330,8 @@ public class TurnSelectionUnidirectional extends JPanel {
             edgeRight.setState(Util.blocksLargerOffsetSide(last), false,
                     Util.hasChangeValue(last), false, false, divider, laneMarkings);
         }
-        edgeLeft.setVisible(!lanes.isEmpty());
-        edgeRight.setVisible(!lanes.isEmpty());
+        edgeLeft.setVisible(!lanes.isEmpty() && !bikeLeft);
+        edgeRight.setVisible(!lanes.isEmpty() && !bikeRight);
         jpanelcontentTurns.revalidate();
         jpanelcontentTurns.repaint();
     }

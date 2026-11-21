@@ -30,6 +30,7 @@ import org.openstreetmap.josm.gui.ExtendedDialog;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.Notification;
 import org.openstreetmap.josm.gui.tagging.TagEditorModel;
+import org.openstreetmap.josm.plugins.turnlanestagging.bean.BLane;
 import org.openstreetmap.josm.plugins.turnlanestagging.bean.BLanes;
 import org.openstreetmap.josm.plugins.turnlanestagging.bean.BRoad;
 import org.openstreetmap.josm.plugins.turnlanestagging.buildturnlanes.BuildTurnLanes;
@@ -456,8 +457,6 @@ public class TurnLanesEditorDialog extends ExtendedDialog {
                 bRoad.setName("Bidirectional");
             } else if (key.equals("cycleway:lane") || key.equals("cycleway:left:lane") || key.equals("cycleway:right:lane")) {
                 bRoad.setBikeBoundary("advisory".equals(element.get(key)) ? "dashed" : "solid");
-            } else if (key.equals("edge_lines")) {
-                bRoad.setEdgeLines(element.get(key));
             }
         }
 
@@ -666,12 +665,46 @@ public class TurnLanesEditorDialog extends ExtendedDialog {
                 tagEditor.getModel().applyKeyValuePair(new Tag("cycleway:right:lane", value));
             }
         }
-        if (bRoad.getEdgeLines() != null && !bRoad.getEdgeLines().isEmpty()) {
-            tagEditor.getModel().applyKeyValuePair(new Tag("edge_lines", bRoad.getEdgeLines()));
+        // The edge line visualisation is derived from the outermost lanes'
+        // change values, so it is always reflected in the written tags.
+        boolean edgeLine = false;
+        if ("Unidirectional".equals(bRoad.getName())) {
+            List<BLane> lanes = bRoad.getLanesUnid().getLanes();
+            edgeLine = !lanes.isEmpty()
+                    && (Util.hasChangeValue(lanes.get(0)) || Util.hasChangeValue(lanes.get(lanes.size() - 1)));
+        } else {
+            BLane left = firstScreenLane(bRoad.getLanesA());
+            BLane right = lastScreenLane(bRoad.getLanesC());
+            edgeLine = (left != null && Util.hasChangeValue(left)) || (right != null && Util.hasChangeValue(right));
+        }
+        if (edgeLine) {
+            tagEditor.getModel().applyKeyValuePair(new Tag("edge_lines", "yes"));
         }
         tagEditor.repaint();
 
         setPreview(waySelected());
+    }
+
+    /**
+     * Returns the leftmost lane of a block in screen order.
+     */
+    private BLane firstScreenLane(BLanes block) {
+        List<BLane> lanes = block.getLanes();
+        if (lanes.isEmpty()) {
+            return null;
+        }
+        return "backward".equals(block.getType()) ? lanes.get(lanes.size() - 1) : lanes.get(0);
+    }
+
+    /**
+     * Returns the rightmost lane of a block in screen order.
+     */
+    private BLane lastScreenLane(BLanes block) {
+        List<BLane> lanes = block.getLanes();
+        if (lanes.isEmpty()) {
+            return null;
+        }
+        return "backward".equals(block.getType()) ? lanes.get(0) : lanes.get(lanes.size() - 1);
     }
 
     /**
