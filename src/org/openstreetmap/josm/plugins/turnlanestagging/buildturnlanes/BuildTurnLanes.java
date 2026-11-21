@@ -361,19 +361,20 @@ public class BuildTurnLanes extends JPanel {
         startDefaultUnidirectional();
     }
 
-    public static class LinesChangeUnidirectionalListener implements PropertyChangeListener {
+    public class LinesChangeUnidirectionalListener implements PropertyChangeListener {
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
             if (evt.getPropertyName().equals(TurnSelectionUnidirectional.LINESCHANGED)) {
                 bRoad = (BRoad) evt.getNewValue();
                 jtfChangeRoad.setText(bRoad.getLanesUnid().getTagturns());
+                firePropertyChange(ROADCHANGED, null, bRoad);
             }
         }
 
     }
 
-    public static class LinesChangeBidirectionalListener implements PropertyChangeListener {
+    public class LinesChangeBidirectionalListener implements PropertyChangeListener {
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
@@ -383,6 +384,7 @@ public class BuildTurnLanes extends JPanel {
                 jtfChangeRoad.setText(bRoad.getLanesA().getTagturns() + ";" +
                                       bRoad.getLanesB().getTagturns() + ";" +
                                       bRoad.getLanesC().getTagturns());
+                firePropertyChange(ROADCHANGED, null, bRoad);
             }
         }
     }

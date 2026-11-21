@@ -586,6 +586,10 @@ public class TurnSelectionBidirectional extends JPanel {
         valBRoad.setLanesB(bLanesB);
         valBRoad.setLanesC(bLanesC);
         jtfChangeLanes.setText(bLanesA.getTagturns() + "==" + bLanesB.getTagturns() + "==" + bLanesC.getTagturns());
+        // Fire the change explicitly: the turns text may stay the same even
+        // though the road changed (e.g. lanes were removed), in which case
+        // the document listener would not notify the road listeners.
+        firePropertyChange(LINESCHANGEDBIDIRECTIONAL, null, valBRoad);
         refreshBoundaries();
         warnIfIncompleteChange();
     }

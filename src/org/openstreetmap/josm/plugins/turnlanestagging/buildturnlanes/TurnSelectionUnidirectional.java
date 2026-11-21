@@ -228,6 +228,10 @@ public class TurnSelectionUnidirectional extends JPanel {
         jpanelcontentTurns.add(bikeRightPanel);
         jpanelcontentTurns.add(edgeRight);
         jtfChangeLanes.setText(valBRoad.getLanesUnid().getTagturns());
+        // Fire the change explicitly: when lanes with empty turns are
+        // removed the turns text may stay the same and the document
+        // listener would never notify the road listeners.
+        firePropertyChange(LINESCHANGED, null, valBRoad);
         refreshBoundaries();
         jpanelcontentTurns.revalidate();
         jpanelcontentTurns.repaint();
