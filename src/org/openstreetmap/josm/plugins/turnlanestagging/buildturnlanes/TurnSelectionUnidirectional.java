@@ -92,8 +92,6 @@ public class TurnSelectionUnidirectional extends JPanel {
         jpanelContentLane = new JPanel(new GridLayout(1, 1));
         jpanelContentLane.setBorder(new SoftBevelBorder(BevelBorder.RAISED));
         jpanelcontentTurns = new JPanel();
-        edgeLeft.setEdge();
-        edgeRight.setEdge();
         curbLeft.setOpaque(true);
         curbLeft.setBackground(new Color(175, 175, 175));
         curbLeft.setPreferredSize(new Dimension(8, 60));
@@ -316,12 +314,19 @@ public class TurnSelectionUnidirectional extends JPanel {
             bikeRightPanel.setMode(cyclewayRight);
             stripBikeRight.setState(bikeSolid, bikeSolid, false, divider, laneMarkings);
         }
-        // Road edge lines are drawn at the outer edges of the road by
-        // default; the Edge lines option can hide them (edge_lines=no) and
-        // lane_markings=no hides all markings.
-        boolean edge = !lanes.isEmpty() && laneMarkings && !"no".equals(valBRoad.getEdgeLines());
-        edgeLeft.setVisible(edge);
-        edgeRight.setVisible(edge);
+        // Road edge lines behave like the lines between lanes: they follow
+        // the change value of the adjacent outermost lane (solid when it may
+        // not cross, dashed when it may, nothing when the value is empty).
+        if (!lanes.isEmpty()) {
+            BLane first = lanes.get(0);
+            BLane last = lanes.get(lanes.size() - 1);
+            edgeLeft.setState(false, Util.blocksSmallerOffsetSide(first),
+                    false, Util.hasChangeValue(first), false, divider, laneMarkings);
+            edgeRight.setState(Util.blocksLargerOffsetSide(last), false,
+                    Util.hasChangeValue(last), false, false, divider, laneMarkings);
+        }
+        edgeLeft.setVisible(!lanes.isEmpty());
+        edgeRight.setVisible(!lanes.isEmpty());
         jpanelcontentTurns.revalidate();
         jpanelcontentTurns.repaint();
     }

@@ -27,7 +27,6 @@ public class LaneBoundaryStrip extends JPanel {
     private boolean leftDrawn = true;
     private boolean rightDrawn = true;
     private boolean centre;
-    private boolean edge;
     private String divider = "";
     private boolean laneMarkings = true;
 
@@ -76,18 +75,6 @@ public class LaneBoundaryStrip extends JPanel {
         repaint();
     }
 
-    /**
-     * Marks this strip as a road edge line: a solid line separating the road
-     * from the shoulder.
-     */
-    public void setEdge() {
-        this.edge = true;
-        setPreferredSize(new Dimension(12, 60));
-        setMinimumSize(new Dimension(8, 40));
-        setMaximumSize(new Dimension(12, Integer.MAX_VALUE));
-        repaint();
-    }
-
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -97,11 +84,7 @@ public class LaneBoundaryStrip extends JPanel {
             int x = getWidth() / 2;
             int y1 = 4;
             int y2 = getHeight() - 4;
-            if (edge) {
-                g2.setColor(COLOR_LANE_LINE);
-                g2.setStroke(new BasicStroke(2.5f));
-                g2.drawLine(x, y1, x, y2);
-            } else if (centre) {
+            if (centre) {
                 drawCentre(g2, x, y1, y2);
             } else if (laneMarkings) {
                 drawLaneBoundary(g2, x, y1, y2);
