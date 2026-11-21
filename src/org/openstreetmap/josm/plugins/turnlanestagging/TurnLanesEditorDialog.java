@@ -456,6 +456,8 @@ public class TurnLanesEditorDialog extends ExtendedDialog {
                 bRoad.setName("Bidirectional");
             } else if (key.equals("cycleway:lane") || key.equals("cycleway:left:lane") || key.equals("cycleway:right:lane")) {
                 bRoad.setBikeBoundary("advisory".equals(element.get(key)) ? "dashed" : "solid");
+            } else if (key.equals("edge_lines")) {
+                bRoad.setEdgeLines(element.get(key));
             }
         }
 
@@ -523,6 +525,7 @@ public class TurnLanesEditorDialog extends ExtendedDialog {
         tagEditor.getModel().delete("cycleway:lane");
         tagEditor.getModel().delete("cycleway:left:lane");
         tagEditor.getModel().delete("cycleway:right:lane");
+        tagEditor.getModel().delete("edge_lines");
 
         if (bRoad.getName().equals("Unidirectional")) {
             if (Util.isEmptyturnlane(bRoad.getLanesUnid().getTagturns())) {
@@ -658,6 +661,9 @@ public class TurnLanesEditorDialog extends ExtendedDialog {
             } else {
                 tagEditor.getModel().applyKeyValuePair(new Tag("cycleway:right:lane", value));
             }
+        }
+        if (bRoad.getEdgeLines() != null && !bRoad.getEdgeLines().isEmpty()) {
+            tagEditor.getModel().applyKeyValuePair(new Tag("edge_lines", bRoad.getEdgeLines()));
         }
         tagEditor.repaint();
 

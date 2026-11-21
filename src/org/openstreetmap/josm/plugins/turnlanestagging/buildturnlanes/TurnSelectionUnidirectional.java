@@ -56,6 +56,8 @@ public class TurnSelectionUnidirectional extends JPanel {
     private final BikeLanePanel bikeRightPanel = new BikeLanePanel();
     private final LaneBoundaryStrip stripBikeLeft = new LaneBoundaryStrip();
     private final LaneBoundaryStrip stripBikeRight = new LaneBoundaryStrip();
+    private final LaneBoundaryStrip edgeLeft = new LaneBoundaryStrip();
+    private final LaneBoundaryStrip edgeRight = new LaneBoundaryStrip();
     private final JPanel curbLeft = new JPanel();
     private final JPanel curbRight = new JPanel();
 
@@ -90,6 +92,8 @@ public class TurnSelectionUnidirectional extends JPanel {
         jpanelContentLane = new JPanel(new GridLayout(1, 1));
         jpanelContentLane.setBorder(new SoftBevelBorder(BevelBorder.RAISED));
         jpanelcontentTurns = new JPanel();
+        edgeLeft.setEdge();
+        edgeRight.setEdge();
         curbLeft.setOpaque(true);
         curbLeft.setBackground(new Color(175, 175, 175));
         curbLeft.setPreferredSize(new Dimension(8, 60));
@@ -175,6 +179,7 @@ public class TurnSelectionUnidirectional extends JPanel {
         int numLanes = bLanes.getLanes().size();
         jpanelcontentTurns.setLayout(new BoxLayout(jpanelcontentTurns, BoxLayout.X_AXIS));
         strips.clear();
+        jpanelcontentTurns.add(edgeLeft);
         jpanelcontentTurns.add(bikeLeftPanel);
         jpanelcontentTurns.add(curbLeft);
         jpanelcontentTurns.add(stripBikeLeft);
@@ -223,6 +228,7 @@ public class TurnSelectionUnidirectional extends JPanel {
         jpanelcontentTurns.add(stripBikeRight);
         jpanelcontentTurns.add(curbRight);
         jpanelcontentTurns.add(bikeRightPanel);
+        jpanelcontentTurns.add(edgeRight);
         jtfChangeLanes.setText(valBRoad.getLanesUnid().getTagturns());
         refreshBoundaries();
         jpanelcontentTurns.revalidate();
@@ -236,6 +242,7 @@ public class TurnSelectionUnidirectional extends JPanel {
         valBRoad.setCyclewayLeft(bRoad.getCyclewayLeft());
         valBRoad.setCyclewayRight(bRoad.getCyclewayRight());
         valBRoad.setBikeBoundary(bRoad.getBikeBoundary());
+        valBRoad.setEdgeLines(bRoad.getEdgeLines());
         refreshPreview();
     }
 
@@ -253,6 +260,7 @@ public class TurnSelectionUnidirectional extends JPanel {
         valBRoad.setCyclewayLeft(BuildTurnLanes.bRoad.getCyclewayLeft());
         valBRoad.setCyclewayRight(BuildTurnLanes.bRoad.getCyclewayRight());
         valBRoad.setBikeBoundary(BuildTurnLanes.bRoad.getBikeBoundary());
+        valBRoad.setEdgeLines(BuildTurnLanes.bRoad.getEdgeLines());
         refreshBoundaries();
     }
 
@@ -303,6 +311,9 @@ public class TurnSelectionUnidirectional extends JPanel {
             bikeRightPanel.setMode(cyclewayRight);
             stripBikeRight.setState(bikeSolid, bikeSolid, false, divider, laneMarkings);
         }
+        boolean edge = "yes".equals(valBRoad.getEdgeLines());
+        edgeLeft.setVisible(edge);
+        edgeRight.setVisible(edge);
         jpanelcontentTurns.revalidate();
         jpanelcontentTurns.repaint();
     }
