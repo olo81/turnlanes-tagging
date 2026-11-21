@@ -722,7 +722,9 @@ public class TurnSelectionBidirectional extends JPanel {
             bikeRightPanel.setMode(cyclewayRight);
             stripBikeRight.setState(bikeSolid, bikeSolid, false, divider, laneMarkings);
         }
-        boolean edge = "yes".equals(valBRoad.getEdgeLines());
+        // Road edge lines are always drawn at the outer edges of the road
+        // (as long as there are lanes and markings are not disabled).
+        boolean edge = (!a.isEmpty() || !c.isEmpty()) && laneMarkings;
         edgeLeft.setVisible(edge);
         edgeRight.setVisible(edge);
         jpanelcontentTurns.revalidate();
