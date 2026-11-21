@@ -615,6 +615,7 @@ public class TurnSelectionBidirectional extends JPanel {
         valBRoad.setLaneMarkings(BuildTurnLanes.bRoad.getLaneMarkings());
         valBRoad.setCyclewayLeft(BuildTurnLanes.bRoad.getCyclewayLeft());
         valBRoad.setCyclewayRight(BuildTurnLanes.bRoad.getCyclewayRight());
+        valBRoad.setBikeBoundary(BuildTurnLanes.bRoad.getBikeBoundary());
         refreshBoundaries();
     }
 
@@ -686,15 +687,17 @@ public class TurnSelectionBidirectional extends JPanel {
         bikeRightPanel.setVisible(bikeRight);
         stripBikeRight.setVisible(bikeRight);
         curbRight.setVisible("track".equals(cyclewayRight));
+        String bikeBoundary = valBRoad.getBikeBoundary() == null ? "solid" : valBRoad.getBikeBoundary();
+        boolean bikeSolid = !"dashed".equals(bikeBoundary);
         if (bikeLeft && !a.isEmpty()) {
             bikeLeftPanel.setMode(cyclewayLeft);
-            // A cycleway lane is always separated from the general traffic
-            // lanes by a solid line, independent of change:lanes.
-            stripBikeLeft.setState(true, true, false, divider, laneMarkings);
+            // The boundary between the cycleway lane and the traffic lanes
+            // follows the 'Bicycle lane line' option (solid or dashed).
+            stripBikeLeft.setState(bikeSolid, bikeSolid, false, divider, laneMarkings);
         }
         if (bikeRight && !c.isEmpty()) {
             bikeRightPanel.setMode(cyclewayRight);
-            stripBikeRight.setState(true, true, false, divider, laneMarkings);
+            stripBikeRight.setState(bikeSolid, bikeSolid, false, divider, laneMarkings);
         }
         jpanelcontentTurns.revalidate();
         jpanelcontentTurns.repaint();
@@ -717,6 +720,7 @@ public class TurnSelectionBidirectional extends JPanel {
         valBRoad.setLaneMarkings(bRoad.getLaneMarkings());
         valBRoad.setCyclewayLeft(bRoad.getCyclewayLeft());
         valBRoad.setCyclewayRight(bRoad.getCyclewayRight());
+        valBRoad.setBikeBoundary(bRoad.getBikeBoundary());
         jtfChangeLanes.setText(bLanesA.getTagturns() + "==" + bLanesB.getTagturns() + "==" + bLanesC.getTagturns());
         lanesA(bRoad.getLanesA());
         lanesB(bRoad.getLanesB());

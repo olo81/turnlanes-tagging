@@ -62,9 +62,11 @@ public class BuildTurnLanes extends JPanel {
 
     private static final String[] DIVIDER_OPTIONS = {"", "solid_line", "double_solid_line", "dashed_line"};
     private static final String[] CYCLEWAY_OPTIONS = {"", "lane", "track", "shared_lane", "no"};
+    private static final String[] BIKE_BOUNDARY_OPTIONS = {"solid", "dashed"};
     private JComboBox<String> jcDivider = null;
     private JComboBox<String> jcCyclewayLeft = null;
     private JComboBox<String> jcCyclewayRight = null;
+    private JComboBox<String> jcBikeBoundary = null;
     private JCheckBox jcLaneMarkingsNo = null;
     private boolean syncingRoadOptions = false;
 
@@ -302,6 +304,20 @@ public class BuildTurnLanes extends JPanel {
         gbc.weightx = 4;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         pnlDirectionalOptions.add(jpCyclewayRightOpt, gbc);
+        //Line between the cycleway lane and the traffic lanes (visual only)
+        JPanel jpBikeBoundaryOpt = new JPanel(new BorderLayout(5, 0));
+        jpBikeBoundaryOpt.setBorder(new SoftBevelBorder(BevelBorder.RAISED));
+        jpBikeBoundaryOpt.add(new JLabel(tr("Bicycle lane line")), BorderLayout.LINE_START);
+        jcBikeBoundary = new JComboBox<>(BIKE_BOUNDARY_OPTIONS);
+        jcBikeBoundary.setToolTipText(tr("Line between the cycleway lane and the traffic lanes (visual only)"));
+        jcBikeBoundary.addActionListener(roadOptionsActionListener);
+        jpBikeBoundaryOpt.add(jcBikeBoundary, BorderLayout.CENTER);
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        gbc.weightx = 4;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        pnlDirectionalOptions.add(jpBikeBoundaryOpt, gbc);
         jrbUnidirectional.addActionListener(actionListenerUnidirectional);
         jrbBidirectional.addActionListener(actionListenerBidirectional);
         return pnlDirectionalOptions;
@@ -519,6 +535,7 @@ public class BuildTurnLanes extends JPanel {
             bRoad.setLaneMarkings(jcLaneMarkingsNo.isSelected() ? "no" : "");
             bRoad.setCyclewayLeft(jcCyclewayLeft.getSelectedItem() == null ? "" : jcCyclewayLeft.getSelectedItem().toString());
             bRoad.setCyclewayRight(jcCyclewayRight.getSelectedItem() == null ? "" : jcCyclewayRight.getSelectedItem().toString());
+            bRoad.setBikeBoundary(jcBikeBoundary.getSelectedItem() == null ? "solid" : jcBikeBoundary.getSelectedItem().toString());
             turnSelectionUnidirectional.refreshPreview();
             turnSelectionBidirectional.refreshPreview();
             firePropertyChange(ROADCHANGED, null, bRoad);
@@ -538,6 +555,8 @@ public class BuildTurnLanes extends JPanel {
             jcLaneMarkingsNo.setSelected("no".equals(road.getLaneMarkings()));
             jcCyclewayLeft.setSelectedItem(road.getCyclewayLeft() == null ? "" : road.getCyclewayLeft());
             jcCyclewayRight.setSelectedItem(road.getCyclewayRight() == null ? "" : road.getCyclewayRight());
+            String boundary = road.getBikeBoundary() == null || road.getBikeBoundary().isEmpty() ? "solid" : road.getBikeBoundary();
+            jcBikeBoundary.setSelectedItem(boundary);
         } finally {
             syncingRoadOptions = false;
         }

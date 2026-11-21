@@ -19,6 +19,7 @@ public class BRoad implements Serializable {
     private String laneMarkings = "";
     private String cyclewayLeft = "";
     private String cyclewayRight = "";
+    private String bikeBoundary = "solid";
 
     public BRoad() {
     }
@@ -120,6 +121,19 @@ public class BRoad implements Serializable {
 
     public void setCyclewayRight(String cyclewayRight) {
         this.cyclewayRight = cyclewayRight;
+    }
+
+    /**
+     * Returns the line style between an edge cycleway lane and the traffic
+     * lanes: {@code solid} or {@code dashed}. This is only a visual setting,
+     * it is not written as a tag.
+     */
+    public String getBikeBoundary() {
+        return bikeBoundary;
+    }
+
+    public void setBikeBoundary(String bikeBoundary) {
+        this.bikeBoundary = bikeBoundary;
     }
 
     public String turns() {
