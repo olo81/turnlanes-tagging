@@ -304,12 +304,12 @@ public class BuildTurnLanes extends JPanel {
         gbc.weightx = 4;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         pnlDirectionalOptions.add(jpCyclewayRightOpt, gbc);
-        //Line between the cycleway lane and the traffic lanes (visual only)
+        //Line between the cycleway lane and the traffic lanes
         JPanel jpBikeBoundaryOpt = new JPanel(new BorderLayout(5, 0));
         jpBikeBoundaryOpt.setBorder(new SoftBevelBorder(BevelBorder.RAISED));
         jpBikeBoundaryOpt.add(new JLabel(tr("Bicycle lane line")), BorderLayout.LINE_START);
         jcBikeBoundary = new JComboBox<>(BIKE_BOUNDARY_OPTIONS);
-        jcBikeBoundary.setToolTipText(tr("Line between the cycleway lane and the traffic lanes (visual only)"));
+        jcBikeBoundary.setToolTipText(tr("Line between the cycleway lane and the traffic lanes (cycleway:lane=exclusive/advisory)"));
         jcBikeBoundary.addActionListener(roadOptionsActionListener);
         jpBikeBoundaryOpt.add(jcBikeBoundary, BorderLayout.CENTER);
         gbc.gridx = 0;

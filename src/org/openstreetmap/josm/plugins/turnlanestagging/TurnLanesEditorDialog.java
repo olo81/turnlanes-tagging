@@ -454,6 +454,8 @@ public class TurnLanesEditorDialog extends ExtendedDialog {
                     bRoad.getLanesC().setType("backward");
                 }
                 bRoad.setName("Bidirectional");
+            } else if (key.equals("cycleway:lane") || key.equals("cycleway:left:lane") || key.equals("cycleway:right:lane")) {
+                bRoad.setBikeBoundary("advisory".equals(element.get(key)) ? "dashed" : "solid");
             }
         }
 
@@ -515,6 +517,9 @@ public class TurnLanesEditorDialog extends ExtendedDialog {
         tagEditor.getModel().delete("cycleway:left");
         tagEditor.getModel().delete("cycleway:right");
         tagEditor.getModel().delete("cycleway:both");
+        tagEditor.getModel().delete("cycleway:lane");
+        tagEditor.getModel().delete("cycleway:left:lane");
+        tagEditor.getModel().delete("cycleway:right:lane");
 
         if (bRoad.getName().equals("Unidirectional")) {
             if (Util.isEmptyturnlane(bRoad.getLanesUnid().getTagturns())) {
@@ -638,6 +643,18 @@ public class TurnLanesEditorDialog extends ExtendedDialog {
         }
         if (bRoad.getCyclewayRight() != null && !bRoad.getCyclewayRight().isEmpty()) {
             tagEditor.getModel().applyKeyValuePair(new Tag("cycleway:right", bRoad.getCyclewayRight()));
+        }
+        boolean bikeLaneLeft = "lane".equals(bRoad.getCyclewayLeft());
+        boolean bikeLaneRight = "lane".equals(bRoad.getCyclewayRight());
+        if (bikeLaneLeft || bikeLaneRight) {
+            String value = "dashed".equals(bRoad.getBikeBoundary()) ? "advisory" : "exclusive";
+            if (bikeLaneLeft && bikeLaneRight) {
+                tagEditor.getModel().applyKeyValuePair(new Tag("cycleway:lane", value));
+            } else if (bikeLaneLeft) {
+                tagEditor.getModel().applyKeyValuePair(new Tag("cycleway:left:lane", value));
+            } else {
+                tagEditor.getModel().applyKeyValuePair(new Tag("cycleway:right:lane", value));
+            }
         }
         tagEditor.repaint();
 

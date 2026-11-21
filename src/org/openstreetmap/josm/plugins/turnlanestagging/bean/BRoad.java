@@ -125,8 +125,8 @@ public class BRoad implements Serializable {
 
     /**
      * Returns the line style between an edge cycleway lane and the traffic
-     * lanes: {@code solid} or {@code dashed}. This is only a visual setting,
-     * it is not written as a tag.
+     * lanes: {@code solid} or {@code dashed}. It is written as
+     * {@code cycleway:lane=exclusive} / {@code cycleway:lane=advisory}.
      */
     public String getBikeBoundary() {
         return bikeBoundary;
