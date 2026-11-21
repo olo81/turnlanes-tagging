@@ -316,9 +316,10 @@ public class TurnSelectionUnidirectional extends JPanel {
             bikeRightPanel.setMode(cyclewayRight);
             stripBikeRight.setState(bikeSolid, bikeSolid, false, divider, laneMarkings);
         }
-        // Road edge lines are always drawn at the outer edges of the road
-        // (as long as there are lanes and markings are not disabled).
-        boolean edge = !lanes.isEmpty() && laneMarkings;
+        // Road edge lines are drawn at the outer edges of the road by
+        // default; the Edge lines option can hide them (edge_lines=no) and
+        // lane_markings=no hides all markings.
+        boolean edge = !lanes.isEmpty() && laneMarkings && !"no".equals(valBRoad.getEdgeLines());
         edgeLeft.setVisible(edge);
         edgeRight.setVisible(edge);
         jpanelcontentTurns.revalidate();
