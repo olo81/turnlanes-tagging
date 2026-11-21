@@ -475,7 +475,7 @@ public class TurnSelection extends JPanel {
         }
     }
 
-    private class BikeListener implements ActionListener {
+    private class BicycleListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent ae) {
             Object selected = bicycle.getSelectedItem();
