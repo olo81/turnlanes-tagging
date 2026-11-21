@@ -115,6 +115,14 @@ public final class Util {
     }
 
     /**
+     * Whether the lane carries a {@code change:lanes} value.
+     */
+    public static boolean hasChangeValue(BLane lane) {
+        String c = lane.getChange();
+        return c != null && !c.isEmpty();
+    }
+
+    /**
      * Whether a lane may not cross the boundary on its larger-offset side
      * (right side for forward/unidirectional lanes, left side for backward
      * lanes, since they face the opposite direction).

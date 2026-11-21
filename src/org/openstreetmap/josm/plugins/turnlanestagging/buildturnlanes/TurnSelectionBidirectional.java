@@ -646,7 +646,9 @@ public class TurnSelectionBidirectional extends JPanel {
         boolean laneMarkings = !"no".equals(valBRoad.getLaneMarkings());
         for (int i = 0; i < strips.size() && i + 1 < lanes.size(); i++) {
             strips.get(i).setState(Util.blocksLargerOffsetSide(lanes.get(i)),
-                    Util.blocksSmallerOffsetSide(lanes.get(i + 1)), false, divider, laneMarkings);
+                    Util.blocksSmallerOffsetSide(lanes.get(i + 1)),
+                    Util.hasChangeValue(lanes.get(i)), Util.hasChangeValue(lanes.get(i + 1)),
+                    false, divider, laneMarkings);
         }
     }
 

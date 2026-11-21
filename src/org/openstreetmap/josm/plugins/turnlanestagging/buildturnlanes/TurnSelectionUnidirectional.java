@@ -268,7 +268,9 @@ public class TurnSelectionUnidirectional extends JPanel {
             BLane left = lanes.get(i);
             BLane right = lanes.get(i + 1);
             strips.get(i).setState(Util.blocksLargerOffsetSide(left),
-                    Util.blocksSmallerOffsetSide(right), false, divider, laneMarkings);
+                    Util.blocksSmallerOffsetSide(right),
+                    Util.hasChangeValue(left), Util.hasChangeValue(right),
+                    false, divider, laneMarkings);
         }
         String cyclewayLeft = valBRoad.getCyclewayLeft() == null ? "" : valBRoad.getCyclewayLeft();
         String cyclewayRight = valBRoad.getCyclewayRight() == null ? "" : valBRoad.getCyclewayRight();

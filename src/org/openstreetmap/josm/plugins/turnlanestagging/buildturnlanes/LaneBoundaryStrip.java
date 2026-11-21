@@ -24,6 +24,8 @@ public class LaneBoundaryStrip extends JPanel {
 
     private boolean leftBlocked;
     private boolean rightBlocked;
+    private boolean leftDrawn = true;
+    private boolean rightDrawn = true;
     private boolean centre;
     private String divider = "";
     private boolean laneMarkings = true;
@@ -36,7 +38,8 @@ public class LaneBoundaryStrip extends JPanel {
     }
 
     /**
-     * Updates the marking drawn by this strip and repaints it.
+     * Updates the marking drawn by this strip and repaints it. Both halves of
+     * the boundary are drawn.
      *
      * @param leftBlocked whether the lane on the left may not cross to the right
      * @param rightBlocked whether the lane on the right may not cross to the left
@@ -45,8 +48,27 @@ public class LaneBoundaryStrip extends JPanel {
      * @param laneMarkings whether lane markings are drawn at all
      */
     public void setState(boolean leftBlocked, boolean rightBlocked, boolean centre, String divider, boolean laneMarkings) {
+        setState(leftBlocked, rightBlocked, true, true, centre, divider, laneMarkings);
+    }
+
+    /**
+     * Updates the marking drawn by this strip and repaints it.
+     *
+     * @param leftBlocked whether the lane on the left may not cross to the right
+     * @param rightBlocked whether the lane on the right may not cross to the left
+     * @param leftDrawn whether the half beside the left lane is drawn (its
+     * {@code change:lanes} value is not empty)
+     * @param rightDrawn whether the half beside the right lane is drawn
+     * @param centre whether this boundary separates the two directions of travel
+     * @param divider the {@code divider} setting for centre boundaries
+     * @param laneMarkings whether lane markings are drawn at all
+     */
+    public void setState(boolean leftBlocked, boolean rightBlocked, boolean leftDrawn, boolean rightDrawn,
+            boolean centre, String divider, boolean laneMarkings) {
         this.leftBlocked = leftBlocked;
         this.rightBlocked = rightBlocked;
+        this.leftDrawn = leftDrawn;
+        this.rightDrawn = rightDrawn;
         this.centre = centre;
         this.divider = divider == null ? "" : divider;
         this.laneMarkings = laneMarkings;
@@ -73,12 +95,22 @@ public class LaneBoundaryStrip extends JPanel {
     }
 
     private void drawLaneBoundary(Graphics2D g2, int x, int y1, int y2) {
-        if (leftBlocked && rightBlocked) {
-            drawHalfLine(g2, x, y1, y2, true, COLOR_LANE_LINE);
-        } else if (!leftBlocked && !rightBlocked) {
-            drawHalfLine(g2, x, y1, y2, false, COLOR_LANE_LINE);
-        } else {
+        if (!leftDrawn && !rightDrawn) {
+            // Neither adjacent lane carries a change:lanes value: no line.
+            return;
+        }
+        if (leftDrawn && rightDrawn) {
+            if (leftBlocked && rightBlocked) {
+                drawHalfLine(g2, x, y1, y2, true, COLOR_LANE_LINE);
+            } else if (!leftBlocked && !rightBlocked) {
+                drawHalfLine(g2, x, y1, y2, false, COLOR_LANE_LINE);
+            } else {
+                drawHalfLine(g2, x - 3, y1, y2, leftBlocked, COLOR_LANE_LINE);
+                drawHalfLine(g2, x + 3, y1, y2, rightBlocked, COLOR_LANE_LINE);
+            }
+        } else if (leftDrawn) {
             drawHalfLine(g2, x - 3, y1, y2, leftBlocked, COLOR_LANE_LINE);
+        } else {
             drawHalfLine(g2, x + 3, y1, y2, rightBlocked, COLOR_LANE_LINE);
         }
     }
