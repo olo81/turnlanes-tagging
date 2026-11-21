@@ -75,18 +75,44 @@ public class BLanes implements Serializable {
 
     /**
      * Builds the {@code bicycle:lanes} value for this block: {@code designated}
-     * for bicycle lanes and {@code yes} for general traffic lanes.
+     * for bicycle lanes, {@code no} where bicycles are forbidden and
+     * {@code yes} for the remaining lanes.
      */
     public String getTagbicycle() {
         String tagbicycle = "";
         for (int i = 0; i < lanes.size(); i++) {
-            if (i == 0) {
-                tagbicycle = lanes.get(i).isBike() ? "designated" : "yes";
-            } else {
-                tagbicycle = tagbicycle + "|" + (lanes.get(i).isBike() ? "designated" : "yes");
+            String value = lanes.get(i).getBicycle();
+            if (value.isEmpty()) {
+                value = "yes";
             }
+            tagbicycle = i == 0 ? value : tagbicycle + "|" + value;
         }
         return tagbicycle;
+    }
+
+    /**
+     * Builds the {@code vehicle:lanes} value for this block.
+     */
+    public String getTagvehicle() {
+        String tagvehicle = "";
+        for (int i = 0; i < lanes.size(); i++) {
+            String value = "no".equals(lanes.get(i).getVehicle()) ? "no" : "yes";
+            tagvehicle = i == 0 ? value : tagvehicle + "|" + value;
+        }
+        return tagvehicle;
+    }
+
+    /**
+     * Builds the {@code cycleway:lanes} value for this block: {@code lane}
+     * where the lane is a designated bicycle lane and {@code no} elsewhere.
+     */
+    public String getTagcycleway() {
+        String tagcycleway = "";
+        for (int i = 0; i < lanes.size(); i++) {
+            String value = lanes.get(i).isBike() ? "lane" : "no";
+            tagcycleway = i == 0 ? value : tagcycleway + "|" + value;
+        }
+        return tagcycleway;
     }
 
     /**
@@ -101,25 +127,57 @@ public class BLanes implements Serializable {
         return false;
     }
 
+    /**
+     * Whether any lane in this block forbids motor vehicles.
+     */
+    public boolean hasVehicleNo() {
+        for (BLane lane : lanes) {
+            if ("no".equals(lane.getVehicle())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void setStringLanes(String type, String turnLanes) {
-        applyLaneValues(type, turnLanes.split("\\|", -1), null, null);
+        applyLaneValues(type, turnLanes.split("\\|", -1), null, null, null);
     }
 
     public void setStringChanges(String type, String changeLanes) {
-        applyLaneValues(type, null, changeLanes.split("\\|", -1), null);
+        applyLaneValues(type, null, changeLanes.split("\\|", -1), null, null);
     }
 
     public void setStringBicycle(String type, String bicycleLanes) {
-        applyLaneValues(type, null, null, bicycleLanes.split("\\|", -1));
+        applyLaneValues(type, null, null, bicycleLanes.split("\\|", -1), null);
+    }
+
+    public void setStringVehicle(String type, String vehicleLanes) {
+        applyLaneValues(type, null, null, null, vehicleLanes.split("\\|", -1));
+    }
+
+    /**
+     * Applies {@code cycleway:lanes} values: a lane with {@code lane} or
+     * {@code track} becomes a designated bicycle lane, other values leave the
+     * existing {@code bicycle:lanes} value untouched.
+     */
+    public void setStringCycleway(String type, String cyclewayLanes) {
+        String[] values = cyclewayLanes.split("\\|", -1);
+        String[] merged = new String[Math.max(values.length, lanes.size())];
+        for (int i = 0; i < merged.length; i++) {
+            String existingBicycle = i < lanes.size() ? lanes.get(i).getBicycle() : "";
+            boolean isLane = i < values.length && ("lane".equals(values[i]) || "track".equals(values[i]));
+            merged[i] = isLane ? "designated" : existingBicycle;
+        }
+        applyLaneValues(type, null, null, merged, null);
     }
 
     /**
      * Builds/updates the lane list by position, preserving the turn value while
-     * setting changes or bicycle flags (or vice versa). This keeps turn,
-     * change and bicycle information in sync when a way carries several
-     * {@code :lanes} tags, regardless of the order they are processed in.
+     * setting changes, bicycle or vehicle values (or vice versa). This keeps
+     * the several {@code :lanes} tags in sync regardless of the order they are
+     * processed in.
      */
-    private void applyLaneValues(String type, String[] turns, String[] changes, String[] bicycles) {
+    private void applyLaneValues(String type, String[] turns, String[] changes, String[] bicycles, String[] vehicles) {
         Map<Integer, BLane> existing = new TreeMap<>();
         for (BLane lane : lanes) {
             existing.put(lane.getPosition(), lane);
@@ -135,6 +193,9 @@ public class BLanes implements Serializable {
         if (bicycles != null) {
             count = Math.max(count, bicycles.length);
         }
+        if (vehicles != null) {
+            count = Math.max(count, vehicles.length);
+        }
 
         List<BLane> result = new ArrayList<>();
         for (int i = 0; i < count; i++) {
@@ -142,13 +203,27 @@ public class BLanes implements Serializable {
             BLane previous = existing.get(position);
             String turn = turns != null ? normalizeTurn(turns[i]) : (previous != null ? previous.getTurn() : "");
             String change = changes != null ? changes[i] : (previous != null ? previous.getChange() : "");
-            boolean bike = bicycles != null ? "designated".equals(bicycles[i])
-                    : (previous != null && previous.isBike());
+            String bicycle = bicycles != null ? normalizeBicycle(bicycles[i])
+                    : (previous != null ? previous.getBicycle() : "");
+            String vehicle = vehicles != null ? normalizeVehicle(vehicles[i])
+                    : (previous != null ? previous.getVehicle() : "");
             BLane lane = new BLane(type, position, turn, change);
-            lane.setBike(bike);
+            lane.setBicycle(bicycle);
+            lane.setVehicle(vehicle);
             result.add(lane);
         }
         this.lanes = result;
+    }
+
+    private String normalizeBicycle(String value) {
+        if ("designated".equals(value) || "no".equals(value)) {
+            return value;
+        }
+        return "";
+    }
+
+    private String normalizeVehicle(String value) {
+        return "no".equals(value) ? "no" : "";
     }
 
     private String normalizeTurn(String turn) {

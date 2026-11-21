@@ -39,8 +39,10 @@ public class TurnSelection extends JPanel {
     public static final String Reverse_CHANGED = "reverse Changed";
     public static final String CHANGE_CHANGED = "Change Changed";
     public static final String BIKE_CHANGED = "Bike Changed";
+    public static final String VEHICLE_CHANGED = "Vehicle Changed";
 
     private static final String[] CHANGE_OPTIONS = {"", "yes", "no", "not_left", "not_right"};
+    private static final String[] BICYCLE_OPTIONS = {"", "no", "designated"};
 
 //    private JPanel jPTurnSelection;
     private JPanel jPOptions;
@@ -54,7 +56,8 @@ public class TurnSelection extends JPanel {
     private JCheckBox merge_to_left;
     private JCheckBox reverse;
     private JComboBox<String> change;
-    private JCheckBox bike;
+    private JComboBox<String> bicycle;
+    private JCheckBox noVehicle;
     private JLabel lblChange;
     private JPanel pnlChange;
 
@@ -85,7 +88,8 @@ public class TurnSelection extends JPanel {
         merge_to_left = new JCheckBox();
         reverse = new JCheckBox();
         change = new JComboBox<>(CHANGE_OPTIONS);
-        bike = new JCheckBox();
+        bicycle = new JComboBox<>(BICYCLE_OPTIONS);
+        noVehicle = new JCheckBox();
 
         //ToolTipText
         left.setToolTipText("left");
@@ -98,7 +102,8 @@ public class TurnSelection extends JPanel {
         merge_to_left.setToolTipText("merge_to_left");
         reverse.setToolTipText("reverse");
         change.setToolTipText("change");
-        bike.setToolTipText("bicycle:lanes=designated");
+        bicycle.setToolTipText("bicycle:lanes (yes/no/designated)");
+        noVehicle.setToolTipText("vehicle:lanes=no");
 
         //Unidirectional
         if (bLine.getType().equals("unid")) {
@@ -153,7 +158,8 @@ public class TurnSelection extends JPanel {
         merge_to_left.addActionListener(new Merge_to_leftListener());
         reverse.addActionListener(new ReverseListener());
         change.addActionListener(new ChangeListener());
-        bike.addActionListener(new BikeListener());
+        bicycle.addActionListener(new BicycleListener());
+        noVehicle.addActionListener(new VehicleListener());
 
         jPOptions.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Lane " + bLine.getPosition(),
                 TitledBorder.CENTER, TitledBorder.DEFAULT_POSITION, new Font("Abyssinica SIL", 0, 11), Color.gray));
@@ -161,7 +167,8 @@ public class TurnSelection extends JPanel {
         lblChange.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
         setTurn();
         setChange();
-        bike.setSelected(bLine.isBike());
+        bicycle.setSelectedItem(bLine.getBicycle());
+        noVehicle.setSelected("no".equals(bLine.getVehicle()));
         applyTint();
         add(buildChangePanel(), BorderLayout.NORTH);
         add(jPOptions, BorderLayout.CENTER);
@@ -171,12 +178,18 @@ public class TurnSelection extends JPanel {
 
     private JPanel buildChangePanel() {
         pnlChange = new JPanel(new BorderLayout(5, 0));
-        pnlChange.add(new JLabel("Change"), BorderLayout.WEST);
-        pnlChange.add(change, BorderLayout.CENTER);
-        JPanel pnlBike = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 2, 0));
-        pnlBike.add(new JLabel("Bike"));
-        pnlBike.add(bike);
-        pnlChange.add(pnlBike, BorderLayout.EAST);
+        JPanel row1 = new JPanel(new BorderLayout(5, 0));
+        row1.add(new JLabel("Change"), BorderLayout.WEST);
+        row1.add(change, BorderLayout.CENTER);
+        JPanel row2 = new JPanel(new BorderLayout(5, 0));
+        row2.add(new JLabel("Bicycle"), BorderLayout.WEST);
+        row2.add(bicycle, BorderLayout.CENTER);
+        JPanel pnlVeh = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 2, 0));
+        pnlVeh.add(new JLabel("No veh."));
+        pnlVeh.add(noVehicle);
+        row2.add(pnlVeh, BorderLayout.EAST);
+        pnlChange.add(row1, BorderLayout.NORTH);
+        pnlChange.add(row2, BorderLayout.CENTER);
         return pnlChange;
     }
 
@@ -191,16 +204,22 @@ public class TurnSelection extends JPanel {
         setBackground(tint);
         jPOptions.setBackground(tint);
         if (pnlChange != null) {
-            pnlChange.setBackground(tint);
-            for (Component comp : pnlChange.getComponents()) {
-                if (comp instanceof JComponent) {
-                    ((JComponent) comp).setBackground(tint);
-                }
-            }
+            tintPanel(pnlChange, tint);
         }
         for (Component comp : jPOptions.getComponents()) {
             if (comp instanceof JComponent) {
                 ((JComponent) comp).setOpaque(false);
+            }
+        }
+    }
+
+    private void tintPanel(JPanel panel, Color tint) {
+        panel.setBackground(tint);
+        for (Component comp : panel.getComponents()) {
+            if (comp instanceof JPanel) {
+                tintPanel((JPanel) comp, tint);
+            } else if (comp instanceof JComponent) {
+                ((JComponent) comp).setBackground(tint);
             }
         }
     }
@@ -216,6 +235,11 @@ public class TurnSelection extends JPanel {
         if (bLine.isBike()) {
             lblChange.setText("bicycle");
             lblChange.setForeground(new Color(0, 110, 0));
+            return;
+        }
+        if ("no".equals(bLine.getBicycle())) {
+            lblChange.setText("no bicycles");
+            lblChange.setForeground(new Color(160, 40, 40));
             return;
         }
         String c = bLine.getChange();
@@ -454,10 +478,19 @@ public class TurnSelection extends JPanel {
     private class BikeListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent ae) {
-            bLine.setBike(bike.isSelected());
+            Object selected = bicycle.getSelectedItem();
+            bLine.setBicycle(selected == null ? "" : selected.toString());
             applyTint();
             updateChangeLabel();
             firePropertyChange(BIKE_CHANGED, null, bLine);
+        }
+    }
+
+    private class VehicleListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            bLine.setVehicle(noVehicle.isSelected() ? "no" : "");
+            firePropertyChange(VEHICLE_CHANGED, null, bLine);
         }
     }
 

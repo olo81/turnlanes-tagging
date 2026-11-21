@@ -13,7 +13,8 @@ public class BLane implements Serializable {
     private String turn;
     private String change = "";
     private String type; //backward, fordward, both_ways
-    private boolean bike;
+    private String bicycle = ""; // bicycle:lanes value ("", "no" or "designated")
+    private String vehicle = ""; // vehicle:lanes value ("" or "no")
 
     public BLane() {
     }
@@ -69,11 +70,33 @@ public class BLane implements Serializable {
      * @return {@code true} if the lane is a designated bicycle lane
      */
     public boolean isBike() {
-        return bike;
+        return "designated".equals(bicycle);
     }
 
-    public void setBike(boolean bike) {
-        this.bike = bike;
+    /**
+     * Returns the {@code bicycle:lanes} value of this lane.
+     *
+     * @return {@code ""} (yes), {@code "no"} or {@code "designated"}
+     */
+    public String getBicycle() {
+        return bicycle;
+    }
+
+    public void setBicycle(String bicycle) {
+        this.bicycle = bicycle;
+    }
+
+    /**
+     * Returns the {@code vehicle:lanes} value of this lane.
+     *
+     * @return {@code ""} (yes) or {@code "no"}
+     */
+    public String getVehicle() {
+        return vehicle;
+    }
+
+    public void setVehicle(String vehicle) {
+        this.vehicle = vehicle;
     }
 
 }

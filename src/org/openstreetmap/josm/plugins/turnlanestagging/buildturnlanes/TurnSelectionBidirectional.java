@@ -364,7 +364,8 @@ public class TurnSelectionBidirectional extends JPanel {
                                     || evt.getPropertyName().equals(TurnSelection.Merge_to_left_CHANGED)
                                     || evt.getPropertyName().equals(TurnSelection.Reverse_CHANGED)
                                     || evt.getPropertyName().equals(TurnSelection.CHANGE_CHANGED)
-                                    || evt.getPropertyName().equals(TurnSelection.BIKE_CHANGED)) {
+                                    || evt.getPropertyName().equals(TurnSelection.BIKE_CHANGED)
+                                    || evt.getPropertyName().equals(TurnSelection.VEHICLE_CHANGED)) {
                                 listBLanes.add((BLane) evt.getNewValue());
                                 bLanesA.setLanes(listBLanes);
                                 printChageLanes();
@@ -403,7 +404,8 @@ public class TurnSelectionBidirectional extends JPanel {
                                     || evt.getPropertyName().equals(TurnSelection.Merge_to_left_CHANGED)
                                     || evt.getPropertyName().equals(TurnSelection.Reverse_CHANGED)
                                     || evt.getPropertyName().equals(TurnSelection.CHANGE_CHANGED)
-                                    || evt.getPropertyName().equals(TurnSelection.BIKE_CHANGED)) {
+                                    || evt.getPropertyName().equals(TurnSelection.BIKE_CHANGED)
+                                    || evt.getPropertyName().equals(TurnSelection.VEHICLE_CHANGED)) {
                                 listBLanes.add((BLane) evt.getNewValue());
                                 bLanesA.setLanes(listBLanes);
                                 printChageLanes();
@@ -452,7 +454,8 @@ public class TurnSelectionBidirectional extends JPanel {
                                 || evt.getPropertyName().equals(TurnSelection.Right_CHANGED)
                                 || evt.getPropertyName().equals(TurnSelection.Reversible_CHANGED)
                                 || evt.getPropertyName().equals(TurnSelection.CHANGE_CHANGED)
-                                || evt.getPropertyName().equals(TurnSelection.BIKE_CHANGED)) {
+                                || evt.getPropertyName().equals(TurnSelection.BIKE_CHANGED)
+                                || evt.getPropertyName().equals(TurnSelection.VEHICLE_CHANGED)) {
                             listBLanes.add((BLane) evt.getNewValue());
                             bLanesB.setLanes(listBLanes);
                             printChageLanes();
@@ -510,7 +513,8 @@ public class TurnSelectionBidirectional extends JPanel {
                                     || evt.getPropertyName().equals(TurnSelection.Merge_to_left_CHANGED)
                                     || evt.getPropertyName().equals(TurnSelection.Reverse_CHANGED)
                                     || evt.getPropertyName().equals(TurnSelection.CHANGE_CHANGED)
-                                    || evt.getPropertyName().equals(TurnSelection.BIKE_CHANGED)) {
+                                    || evt.getPropertyName().equals(TurnSelection.BIKE_CHANGED)
+                                    || evt.getPropertyName().equals(TurnSelection.VEHICLE_CHANGED)) {
                                 listBLanes.add((BLane) evt.getNewValue());
                                 bLanesC.setLanes(listBLanes);
                                 printChageLanes();
@@ -549,7 +553,8 @@ public class TurnSelectionBidirectional extends JPanel {
                                     || evt.getPropertyName().equals(TurnSelection.Merge_to_left_CHANGED)
                                     || evt.getPropertyName().equals(TurnSelection.Reverse_CHANGED)
                                     || evt.getPropertyName().equals(TurnSelection.CHANGE_CHANGED)
-                                    || evt.getPropertyName().equals(TurnSelection.BIKE_CHANGED)) {
+                                    || evt.getPropertyName().equals(TurnSelection.BIKE_CHANGED)
+                                    || evt.getPropertyName().equals(TurnSelection.VEHICLE_CHANGED)) {
                                 listBLanes.add((BLane) evt.getNewValue());
                                 bLanesC.setLanes(listBLanes);
                                 printChageLanes();
