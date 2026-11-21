@@ -652,9 +652,14 @@ public class TurnSelectionBidirectional extends JPanel {
         String divider = valBRoad.getDivider();
         boolean laneMarkings = !"no".equals(valBRoad.getLaneMarkings());
         for (int i = 0; i < strips.size() && i + 1 < lanes.size(); i++) {
+            // The boundary is drawn (on both halves) when either adjacent
+            // lane carries a change:lanes value; solid beside a lane that
+            // may not cross, dashed otherwise. No line at all when both
+            // values are empty.
+            boolean drawn = Util.hasChangeValue(lanes.get(i)) || Util.hasChangeValue(lanes.get(i + 1));
             strips.get(i).setState(Util.blocksLargerOffsetSide(lanes.get(i)),
                     Util.blocksSmallerOffsetSide(lanes.get(i + 1)),
-                    Util.hasChangeValue(lanes.get(i)), Util.hasChangeValue(lanes.get(i + 1)),
+                    drawn, drawn,
                     false, divider, laneMarkings);
         }
     }
