@@ -681,8 +681,17 @@ public class TurnSelectionBidirectional extends JPanel {
         boolean laneMarkings = !"no".equals(valBRoad.getLaneMarkings());
         String cyclewayLeft = valBRoad.getCyclewayLeft() == null ? "" : valBRoad.getCyclewayLeft();
         String cyclewayRight = valBRoad.getCyclewayRight() == null ? "" : valBRoad.getCyclewayRight();
+        if (cyclewayLeft.isEmpty() && BuildTurnLanes.bRoad.getCyclewayLeft() != null) {
+            valBRoad.setCyclewayLeft(BuildTurnLanes.bRoad.getCyclewayLeft());
+            cyclewayLeft = valBRoad.getCyclewayLeft();
+        }
+        if (cyclewayRight.isEmpty() && BuildTurnLanes.bRoad.getCyclewayRight() != null) {
+            valBRoad.setCyclewayRight(BuildTurnLanes.bRoad.getCyclewayRight());
+            cyclewayRight = valBRoad.getCyclewayRight();
+        }
         boolean bikeLeft = !cyclewayLeft.isEmpty() && !"no".equals(cyclewayLeft);
         boolean bikeRight = !cyclewayRight.isEmpty() && !"no".equals(cyclewayRight);
+        System.err.println("TL-DEBUG bidir cycleway left='" + cyclewayLeft + "' right='" + cyclewayRight + "' bikeLeft=" + bikeLeft + " bikeRight=" + bikeRight);
         bikeLeftPanel.setVisible(bikeLeft);
         stripBikeLeft.setVisible(bikeLeft);
         curbLeft.setVisible("track".equals(cyclewayLeft));
